@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace stroibot.Match3.Models
@@ -7,6 +8,7 @@ namespace stroibot.Match3.Models
 	{
 		public event Action<Vector2Int, Vector2Int> OnSwap;
 		public event Action<Vector2Int> OnRemove;
+		public event Action<IReadOnlyCollection<Vector2Int>> OnRemoveMultiple;
 		public event Action<Vector2Int> OnSet;
 		public event Action OnCascade;
 
@@ -40,10 +42,15 @@ namespace stroibot.Match3.Models
 			OnSet?.Invoke(new Vector2Int(x, y));
 		}
 
-		public void RemoveAt(int x, int y)
+		public void RemoveAt(
+			IReadOnlyCollection<Vector2Int> positionToRemove)
 		{
-			_pieces[x, y] = null;
-			OnRemove?.Invoke(new Vector2Int(x, y));
+			foreach (var position in positionToRemove)
+			{
+				_pieces[position.x, position.y] = null;
+			}
+
+			OnRemoveMultiple?.Invoke(positionToRemove);
 		}
 
 		public void Cascade()

@@ -1,5 +1,6 @@
 ﻿using stroibot.Core.States;
 using stroibot.Match3.States;
+using stroibot.Match3.Views;
 
 namespace stroibot.Match3
 {
@@ -7,19 +8,27 @@ namespace stroibot.Match3
 	{
 		private readonly StateMachine<GameContext> _stateMachine;
 		private readonly GameStateFactory _gameStateFactory;
+		private readonly AnimationService _animationService;
 
-		protected Game(
+		public Game(
 			StateMachine<GameContext> stateMachine,
-			GameStateFactory gameStateFactory)
+			GameStateFactory gameStateFactory,
+			AnimationService animationService)
 		{
 			_stateMachine = stateMachine;
 			_gameStateFactory = gameStateFactory;
+			_animationService = animationService;
 		}
 
-		public virtual void Start()
+		public void Start()
 		{
 			var setupBoardGameState = _gameStateFactory.Create<SetupBoardGameState>();
 			_stateMachine.SwitchTo(setupBoardGameState);
+		}
+
+		public void Tick()
+		{
+			_animationService.UpdateAnimations();
 		}
 	}
 }

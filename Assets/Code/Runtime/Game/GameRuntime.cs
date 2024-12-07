@@ -19,5 +19,10 @@ namespace stroibot.Match3
 		{
 			_game.Start();
 		}
+
+		public void Update()
+		{
+			_game.Tick();
+		}
 	}
 }

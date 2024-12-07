@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GameSpriteAtlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 2048
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 100
+      m_CrunchedCompression: 1
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 589919923b3173b42a6117f560d28d92, type: 3}
+    - {fileID: 2800000, guid: d1c82e015b38d4448bc1ba5e3eff90fa, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: d1c82e015b38d4448bc1ba5e3eff90fa, type: 3}
+  - {fileID: 21300000, guid: fa67839330996764683a123cb35a1ea8, type: 3}
+  - {fileID: 21300000, guid: 4a734bd644988f444be49d908cddb60d, type: 3}
+  - {fileID: 21300000, guid: 15913fd90bd479a45a568c3067a75c5d, type: 3}
+  - {fileID: 21300000, guid: 6bb7c00a68de1634cbee8574d8499804, type: 3}
+  - {fileID: 21300000, guid: ad0e520e8ba21b347ab3119195856b11, type: 3}
+  - {fileID: 21300000, guid: d184668e3ca69674d8a20a99d14eb1d2, type: 3}
+  - {fileID: 21300000, guid: 6a4836de24a0c354f986c800d32b7c86, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bomb100
+  - pg_09
+  - mg_01
+  - rg_28
+  - yg_03
+  - sg_14
+  - gg_08
+  - bg_15
+  m_RenderDataMap: {}
+  m_Tag: GameSpriteAtlas
+  m_IsVariant: 0

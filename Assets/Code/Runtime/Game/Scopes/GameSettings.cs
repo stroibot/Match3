@@ -10,7 +10,6 @@ namespace stroibot.TapTapPop.Scopes
 		[Tooltip("Maximum amount of iterations during initial board setup to avoid matches")]
 		[SerializeField, Range(50, 200)] private int _maxIterations = 100;
 		[SerializeField, Range(1, 50)] private int _scorePerGem = 10;
-		[SerializeField] private int _seed;
 
 		[Header("Game Board")]
 		[SerializeField, Range(2, 10)] private int _width = 7;
@@ -18,7 +17,6 @@ namespace stroibot.TapTapPop.Scopes
 
 		public int MaxIterations => _maxIterations;
 		public int ScorePerGem => _scorePerGem;
-		public int Seed => _seed;
 		public int Width => _width;
 		public int Height => _height;
 	}

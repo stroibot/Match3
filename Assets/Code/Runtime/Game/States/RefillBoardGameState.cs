@@ -58,7 +58,8 @@ namespace stroibot.Match3.States
 			}
 
 			var matches = Context.MatchChecker.FindMatches();
-			matches.UnionWith(Context.BombChecker.CheckForBombs(matches));
+			var bombMatches = Context.BombChecker.CheckForBombs();
+			matches.UnionWith(bombMatches);
 
 			if (matches.Count > 0)
 			{

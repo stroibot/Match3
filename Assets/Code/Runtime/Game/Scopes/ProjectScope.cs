@@ -3,6 +3,7 @@ using stroibot.Core.States;
 using stroibot.Match3;
 using stroibot.Match3.Input;
 using stroibot.Match3.States;
+using stroibot.Match3.Views;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;
@@ -36,6 +37,8 @@ namespace stroibot.TapTapPop.Scopes
 			builder.Register<RefillBoardGameState>(Lifetime.Transient);
 			// Game
 			builder.Register<Game>(Lifetime.Singleton);
+			// Views
+			builder.Register<AnimationService>(Lifetime.Singleton);
 		}
 	}
 }

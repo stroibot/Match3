@@ -18,6 +18,7 @@ namespace stroibot.Match3.Input
 		private StateMachine<GameContext> _stateMachine;
 		private GameContext _gameContext;
 		private GameStateFactory _gameStateFactory;
+		private AnimationService _animationService;
 		private Camera _camera;
 
 		private Vector2 _startPosition;
@@ -29,19 +30,21 @@ namespace stroibot.Match3.Input
 			ILogger logger,
 			StateMachine<GameContext> stateMachine,
 			GameContext gameContext,
-			GameStateFactory gameStateFactory)
+			GameStateFactory gameStateFactory,
+			AnimationService animationService)
 		{
 			_logger = logger;
 			_stateMachine = stateMachine;
 			_gameContext = gameContext;
 			_gameStateFactory = gameStateFactory;
+			_animationService = animationService;
 			_gameBoardView = FindObjectOfType<GameBoardView>();
 			_camera = Camera.main;
 		}
 
 		public void Update()
 		{
-			if (!_gameContext.IsInputAllowed)
+			if (!_gameContext.IsInputAllowed || _animationService.IsAnimating)
 			{
 				return;
 			}

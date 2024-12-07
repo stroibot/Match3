@@ -1,4 +1,5 @@
-﻿using stroibot.Core.Factories;
+﻿using DG.Tweening;
+using stroibot.Core.Factories;
 using stroibot.Core.Pooling;
 using stroibot.Match3.Models;
 using System;
@@ -50,11 +51,51 @@ namespace stroibot.Match3.Views
 				}
 			}
 
+			transform.localScale = Vector3.one;
 			_spriteRenderer.sprite = pieceTypeMapping.Sprite;
-			name = GeName(piece, position);
+			name = GetName(piece, position);
 		}
 
-		private static string GeName(
+		public Tween GetSpawnAnimation(
+			Vector3 position,
+			float delay = 0f)
+		{
+			return transform
+				.DOLocalMove(position, 0.2f)
+				.SetDelay(delay)
+				.SetEase(Ease.OutSine)
+				.Pause();
+		}
+
+		public Tween Move(
+			Vector3 newPosition,
+			float delay = 0f)
+		{
+			UpdateName(newPosition);
+			return transform
+				.DOLocalMove(newPosition, 0.2f)
+				.SetDelay(delay)
+				.SetEase(Ease.OutSine)
+				.Pause();
+		}
+
+		public Tween GetDestroyAnimation(
+			float delay = 0f)
+		{
+			return transform
+				.DOScale(Vector3.zero, 0.2f)
+				.SetDelay(delay)
+				.SetEase(Ease.InBack)
+				.Pause();
+		}
+
+		private void UpdateName(
+			Vector3 newPosition)
+		{
+			name = GetName(Piece, new Vector2Int(Mathf.RoundToInt(newPosition.x), Mathf.RoundToInt(newPosition.y)));
+		}
+
+		private static string GetName(
 			Piece piece,
 			Vector2Int position)
 		{

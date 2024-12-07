@@ -1,163 +1,159 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace stroibot.Match3.Models
 {
 	public class BombChecker
 	{
-		private const int BlasSize = 1;
+		public static readonly Vector2Int[] BombExplosionPattern =
+		{
+			new(-2, 0), new(-1, 0), new(1, 0), new(2, 0),
+			new(0, -2), new(0, -1), new(0, 1), new(0, 2),
+			new(-1, -1), new(1, -1), new(-1, 1), new(1, 1)
+		};
+
+		private static readonly Vector2Int[] AdjacentOffsets =
+		{
+			new(0, 1), new(0, -1), new(1, 0), new(-1, 0)
+		};
+
+		private const int NumberOfBombsToMatch = 1;
+		private const int NumberOfGemsToMatch = 3;
 
 		private readonly GameBoard _gameBoard;
 
-		public BombChecker(
-			GameBoard gameBoard)
+		public BombChecker(GameBoard gameBoard)
 		{
 			_gameBoard = gameBoard;
 		}
 
-		public HashSet<Vector2Int> CheckForBombs(
-			IReadOnlyCollection<Vector2Int> matches)
+		public HashSet<Vector2Int> CheckForBombs()
 		{
-			var newMatches = new HashSet<Vector2Int>();
+			var bombMatches = new HashSet<Vector2Int>();
 
-			foreach (var matchPosition in matches)
+			for (int x = 0; x < _gameBoard.Width; x++)
 			{
-				var piece = _gameBoard.GetPiece(matchPosition.x, matchPosition.y);
-
-				switch (piece)
+				for (int y = 0; y < _gameBoard.Height; y++)
 				{
-					case Bomb:
+					var piece = _gameBoard.GetPiece(x, y);
+
+					if (piece is not Bomb bomb)
 					{
-						newMatches.UnionWith(MarkBombArea(matchPosition, BlasSize));
-						break;
+						continue;
 					}
-					case Gem gem:
+
+					var adjacentBombs = GetAdjacentBombs(new Vector2Int(x, y));
+
+					if (adjacentBombs.Count >= NumberOfBombsToMatch)
 					{
-						newMatches.UnionWith(CheckNeighborsForBombs(matchPosition, gem.Type));
-						break;
-					}
-				}
-			}
+						AddBombExplosion(bombMatches, new Vector2Int(x, y));
 
-			return newMatches;
-		}
-
-		private HashSet<Vector2Int> CheckNeighborsForBombs(
-			Vector2Int position,
-			Piece.Color color)
-		{
-			var newMatches = new HashSet<Vector2Int>();
-			var neighbors = GetNeighbors(position);
-
-			foreach (var neighbor in neighbors)
-			{
-				var piece = _gameBoard.GetPiece(neighbor.x, neighbor.y);
-
-				switch (piece)
-				{
-					case Bomb:
-					{
-						newMatches.Add(neighbor);
-						newMatches.UnionWith(MarkBombArea(neighbor, BlasSize));
-						break;
-					}
-					case Gem gem when gem.Type == color:
-					{
-						if (HasValidMatch(neighbor, color))
+						foreach (var adjacentBomb in adjacentBombs)
 						{
-							newMatches.Add(neighbor);
+							AddBombExplosion(bombMatches, adjacentBomb);
 						}
-						break;
 					}
-				}
-			}
 
-			return newMatches;
-		}
+					var matchingGems = GetMatchingGemsForBomb(new Vector2Int(x, y), bomb.Type);
 
-		private List<Vector2Int> GetNeighbors(Vector2Int position)
-		{
-			var neighbors = new List<Vector2Int>
-			{
-				new(position.x - 1, position.y),
-				new(position.x + 1, position.y),
-				new(position.x, position.y - 1),
-				new(position.x, position.y + 1)
-			};
-
-			return neighbors.Where(_gameBoard.IsValidPosition).ToList();
-		}
-
-		private HashSet<Vector2Int> MarkBombArea(
-			Vector2Int position,
-			int blastSize)
-		{
-			var matches = new HashSet<Vector2Int>();
-
-			for (int x = position.x - blastSize; x <= position.x + blastSize; x++)
-			{
-				for (int y = position.y - blastSize; y <= position.y + blastSize; y++)
-				{
-					if (_gameBoard.IsValidPosition(new Vector2Int(x, y)))
+					if (matchingGems.Count >= NumberOfGemsToMatch)
 					{
-						var gem = _gameBoard.GetPiece(x, y);
-
-						if (gem == null)
-						{
-							continue;
-						}
-
-						matches.Add(new Vector2Int(x, y));
+						AddBombExplosion(bombMatches, new Vector2Int(x, y));
 					}
 				}
 			}
 
-			return matches;
+			return bombMatches;
 		}
 
-		private bool HasValidMatch(
-			Vector2Int position,
-			Piece.Color color)
+		private List<Vector2Int> GetAdjacentBombs(
+			Vector2Int position)
 		{
-			int horizontalMatch = CountMatchInDirection(position, color, Vector2Int.left) +
-								  CountMatchInDirection(position, color, Vector2Int.right) + 1;
+			var adjacentBombs = new List<Vector2Int>();
 
-			int verticalMatch = CountMatchInDirection(position, color, Vector2Int.up) +
-								CountMatchInDirection(position, color, Vector2Int.down) + 1;
-
-			return horizontalMatch >= 3 || verticalMatch >= 3;
-		}
-
-		private int CountMatchInDirection(
-			Vector2Int position,
-			Piece.Color color,
-			Vector2Int direction)
-		{
-			int count = 0;
-
-			while (true)
+			foreach (var offset in AdjacentOffsets)
 			{
-				position += direction;
+				var adjacentPosition = position + offset;
 
-				if (!_gameBoard.IsValidPosition(position))
+				if (!_gameBoard.IsValidPosition(adjacentPosition))
 				{
-					break;
+					continue;
 				}
 
-				var piece = _gameBoard.GetPiece(position.x, position.y);
+				var adjacentPiece = _gameBoard.GetPiece(adjacentPosition.x, adjacentPosition.y);
 
-				if (piece is Gem gem && gem.Type == color)
+				if (adjacentPiece is Bomb)
 				{
-					count++;
-				}
-				else
-				{
-					break;
+					adjacentBombs.Add(adjacentPosition);
 				}
 			}
 
-			return count;
+			return adjacentBombs;
+		}
+
+		private List<Vector2Int> GetMatchingGemsForBomb(
+			Vector2Int bombPosition,
+			Piece.Color bombColor)
+		{
+			var matchingGems = new List<Vector2Int>();
+			var directions = new[] { Vector2Int.right, Vector2Int.up };
+
+			foreach (var dir in directions)
+			{
+				var matchingPositions = CheckDirection(bombPosition, dir, bombColor);
+
+				if (matchingPositions.Count >= NumberOfGemsToMatch)
+				{
+					matchingGems.AddRange(matchingPositions);
+				}
+			}
+
+			return matchingGems;
+		}
+
+		private List<Vector2Int> CheckDirection(
+			Vector2Int bombPosition,
+			Vector2Int direction,
+			Piece.Color bombColor)
+		{
+			var positions = new List<Vector2Int>();
+
+			for (int i = -2; i <= 2; i++)
+			{
+				var offset = direction * i;
+				var checkPosition = bombPosition + offset;
+
+				if (!_gameBoard.IsValidPosition(checkPosition))
+				{
+					continue;
+				}
+
+				var piece = _gameBoard.GetPiece(checkPosition.x, checkPosition.y);
+
+				if (piece is Gem gem && gem.Type == bombColor)
+				{
+					positions.Add(checkPosition);
+				}
+			}
+
+			return positions;
+		}
+
+		private void AddBombExplosion(
+			HashSet<Vector2Int> bombMatches,
+			Vector2Int bombPosition)
+		{
+			bombMatches.Add(bombPosition);
+
+			foreach (var offset in BombExplosionPattern)
+			{
+				var explosionPosition = bombPosition + offset;
+
+				if (_gameBoard.IsValidPosition(explosionPosition))
+				{
+					bombMatches.Add(explosionPosition);
+				}
+			}
 		}
 	}
 }

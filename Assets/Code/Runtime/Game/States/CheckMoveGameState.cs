@@ -36,7 +36,8 @@ namespace stroibot.Match3.States
 			gameBoard.Swap(piecePosition, targetPosition);
 
 			var matches = Context.MatchChecker.FindMatches();
-			matches.UnionWith(Context.BombChecker.CheckForBombs(matches));
+			var bombMatches = Context.BombChecker.CheckForBombs();
+			matches.UnionWith(bombMatches);
 
 			if (matches.Count > 0)
 			{
@@ -48,7 +49,7 @@ namespace stroibot.Match3.States
 			else
 			{
 				gameBoard.Swap(piecePosition, targetPosition);
-				Logger.LogError(LogTag, "No matches!");
+				Logger.LogWarning(LogTag, "No matches!");
 				var idleGameState = GameStateFactory.Create<IdleGameState>();
 				StateMachine.SwitchTo(idleGameState);
 			}

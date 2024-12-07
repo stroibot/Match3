@@ -44,10 +44,25 @@ namespace stroibot.Match3.Models
 
 					var piece = _gameBoard.GetPiece(x, y);
 
-					if (piece is Gem &&
-						(currentMatch.Count == 0 || piece.Type == _gameBoard.GetPiece(currentMatch[0].x, currentMatch[0].y).Type))
+					if (piece is Gem gem)
 					{
-						currentMatch.Add(new Vector2Int(x, y));
+						if (currentMatch.Count == 0 || gem.Type == _gameBoard.GetPiece(currentMatch[0].x, currentMatch[0].y).Type)
+						{
+							currentMatch.Add(new Vector2Int(x, y));
+						}
+						else
+						{
+							if (currentMatch.Count >= NumberOfGemsToMatch)
+							{
+								foreach (var position in currentMatch)
+								{
+									matches.Add(position);
+								}
+							}
+
+							currentMatch.Clear();
+							currentMatch.Add(new Vector2Int(x, y));
+						}
 					}
 					else
 					{
@@ -60,11 +75,6 @@ namespace stroibot.Match3.Models
 						}
 
 						currentMatch.Clear();
-
-						if (piece != null)
-						{
-							currentMatch.Add(new Vector2Int(x, y));
-						}
 					}
 				}
 

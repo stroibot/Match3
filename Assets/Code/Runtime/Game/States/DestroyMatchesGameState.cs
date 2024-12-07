@@ -26,11 +26,9 @@ namespace stroibot.Match3.States
 			var currentMatches = Context.CurrentMatches;
 			var matchGroups = GroupMatchesByColor(currentMatches);
 
-			foreach (var matchPosition in currentMatches)
-			{
-				Context.Score += GameSettings.ScorePerGem;
-				DestroyMatchesAt(gameBoard, matchPosition);
-			}
+			Context.Score += GameSettings.ScorePerGem * currentMatches.Count;
+
+			gameBoard.RemoveAt(currentMatches);
 
 			foreach (var matchGroup in matchGroups)
 			{
@@ -49,13 +47,6 @@ namespace stroibot.Match3.States
 
 			var cascadeGameState = GameStateFactory.Create<CascadeGameState>();
 			StateMachine.SwitchTo(cascadeGameState);
-		}
-
-		private static void DestroyMatchesAt(
-			GameBoard gameBoard,
-			Vector2Int position)
-		{
-			gameBoard.RemoveAt(position.x, position.y);
 		}
 
 		private Dictionary<Piece.Color, List<Vector2Int>> GroupMatchesByColor(
